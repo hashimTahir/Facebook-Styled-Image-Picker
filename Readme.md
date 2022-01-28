@@ -23,7 +23,7 @@ Add it in your root build.gradle at the end of repositories:
 Step 2. Add the dependency
 
 	dependencies {
-        implementation 'com.github.hashimTahir:Facebook-Styled-Image-Picker :1.0'
+	        implementation 'com.github.hashimTahir:Facebook-Styled-Image-Picker:v1.0'
 	}
 
 Step 3. Use the launcher to start the image picker with GalleryActivity like so:
@@ -40,7 +40,7 @@ Step 3. Use the launcher to start the image picker with GalleryActivity like so:
     ) { result ->
         if (result.resultCode == Activity.RESULT_OK) {
             val hRecieviedImagesList =
-                result.data?.extras?.getParcelableArrayList<IntentHolder>(Constants.H_IMAGE_LIST_IC)
+                result.data?.extras?.getParcelableArrayList<IntentHolder>("hImageList")
             hDisplayAdapter.hSetData(hRecieviedImagesList)
         }
 
