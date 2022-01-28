@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    style="@style/hSelectableItemBackgroundBorder"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="@dimen/_8dp"
+    android:padding="@dimen/_8dp">
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/hFolderNameTv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/_10dp"
+        android:gravity="center"
+        android:text="@string/folder_name"
+        android:textColor="@color/black"
+        android:textSize="@dimen/_14sp"
+        android:textStyle="bold"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/hFolderThumbIv" />
+
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/hFolderCountTv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/_10dp"
+        android:gravity="center"
+        android:text="@string/count"
+        android:textColor="@color/black1"
+        android:textSize="@dimen/_14sp"
+        app:layout_constraintBottom_toBottomOf="@+id/hFolderThumbIv"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/hFolderNameTv" />
+
+
+    <com.google.android.material.imageview.ShapeableImageView
+        android:id="@+id/hFolderThumbIv"
+        android:layout_width="@dimen/_50dp"
+        android:layout_height="@dimen/_50dp"
+        android:layout_margin="@dimen/_8dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:shapeAppearanceOverlay="@style/h10PercentCornerSize" />
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

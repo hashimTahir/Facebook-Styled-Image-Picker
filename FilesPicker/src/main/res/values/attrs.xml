@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="CircleCheckbox">
+
+        <attr name="hShowOuterCircle" format="boolean" />
+
+        <attr name="hTickColor" format="string" />
+        <attr name="hOuterCircleColor" format="string" />
+        <attr name="hInnerCircleColor" format="string" />
+        <attr name="hTextColor" format="string" />
+        <attr name="hCircleBorderColor" format="string" />
+
+        <attr name="hOuterCircleRadius" format="dimension" />
+        <attr name="hInnerCircleRadius" format="dimension" />
+        <attr name="hTextSize" format="dimension" />
+        <attr name="hBorderThickness" format="dimension" />
+        <attr name="hTickThickness" format="dimension" />
+
+        <attr name="hTextLeftPadding" format="dimension" />
+        <attr name="hText" format="string" />
+
+    </declare-styleable>
+</resources>

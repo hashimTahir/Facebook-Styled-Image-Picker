@@ -8,4 +8,6 @@
     <string name="folder_name">Folder Name</string>
     <string name="count">Count</string>
     <string name="next">Next</string>
+    <string name="permission_needed">Permission needed</string>
+    <string name="read_storage_permission">Read Storage permission is needed to find Image files. Press OK to enable in settings.</string>
 </resources>
