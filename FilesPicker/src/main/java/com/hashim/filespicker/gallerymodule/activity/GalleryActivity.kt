@@ -15,7 +15,8 @@ import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
 import com.hashim.filespicker.R
 import com.hashim.filespicker.databinding.ActivityGalleryBinding
-import com.hashim.filespicker.gallerymodule.Constants.Companion.H_IMAGE_LIST_IC
+import com.hashim.filespicker.gallerymodule.Constants.Companion.H_GET_IMAGES
+import com.hashim.filespicker.gallerymodule.Constants.Companion.H_GET_VIDEOS
 import com.hashim.filespicker.gallerymodule.GalleryStateView.*
 import com.hashim.filespicker.gallerymodule.GalleryViewModel
 import com.hashim.filespicker.gallerymodule.GalleryVs.*
@@ -35,7 +36,7 @@ class GalleryActivity : AppCompatActivity(), View.OnClickListener {
         ActivityResultContracts.StartActivityForResult()
     ) {
         if (PermissionUtils.hHasReadPermissions(this)) {
-            hGalleryViewModel.hFetchFiles()
+            hGalleryViewModel.hFetchFiles(intent.extras)
         } else {
             Toast.makeText(
                 this,
@@ -56,7 +57,7 @@ class GalleryActivity : AppCompatActivity(), View.OnClickListener {
         ActivityResultContracts.RequestPermission()
     ) { hIsPermissionGranted ->
         if (hIsPermissionGranted) {
-            hGalleryViewModel.hFetchFiles()
+            hGalleryViewModel.hFetchFiles(intent.extras)
         } else {
             if (PermissionUtils.hRationaileCheck(this).not()) {
                 PermissionUtils.hShowSettingsDialog(this, hLaunchSettingsContract)
@@ -80,7 +81,7 @@ class GalleryActivity : AppCompatActivity(), View.OnClickListener {
 
         when {
             PermissionUtils.hHasReadPermissions(this) -> {
-                hGalleryViewModel.hFetchFiles()
+                hGalleryViewModel.hFetchFiles(intent.extras)
             }
             else -> {
                 hRequestPermissions.launch(
@@ -99,7 +100,7 @@ class GalleryActivity : AppCompatActivity(), View.OnClickListener {
                 when (galleryVs) {
                     is OnFilesRetrieved -> hUpdateFolderName(galleryVs.hFolderName)
                     is OnViewSetup -> hSetupViews()
-                    is OnSelectionDone -> hReturnDataAndFinish(galleryVs.hSelectedImagesList)
+                    is OnSelectionDone -> hReturnDataAndFinish(galleryVs.hIntentHolder)
                     is OnUpdateActivity -> hUpdateButtons(galleryVs.hShowNextB)
                     is OnLaunchCamera -> hTakePictureLauncher.launch(galleryVs.hPhotoUri)
                     else -> Unit
@@ -126,16 +127,27 @@ class GalleryActivity : AppCompatActivity(), View.OnClickListener {
     }
 
     private fun hReturnDataAndFinish(
-        hSelectedImagesList: List<IntentHolder>
+        hIntentHolder: IntentHolder
     ) {
         Intent(
             this,
             callingActivity?.className?.javaClass
         ).also {
-            it.putParcelableArrayListExtra(
-                H_IMAGE_LIST_IC,
-                ArrayList(hSelectedImagesList)
-            )
+            when {
+                hIntentHolder.hVideosList != null -> {
+                    it.putExtra(
+                        H_GET_VIDEOS,
+                        hIntentHolder
+                    )
+                }
+                hIntentHolder.hImageList != null -> {
+                    it.putExtra(
+                        H_GET_IMAGES,
+                        hIntentHolder
+                    )
+                }
+            }
+
             setResult(RESULT_OK, it)
             finish()
         }

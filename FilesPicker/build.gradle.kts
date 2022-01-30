@@ -20,7 +20,6 @@ android {
 
     buildTypes {
         release {
-            isMinifyEnabled = true
             proguardFiles(getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro")
         }
         debug {
@@ -78,13 +77,13 @@ afterEvaluate {
                 from(components["debug"])
                 artifactId = "FilesPicker"
                 groupId = "com.github.hashimTahir"
-                version = "1.0"
+                version = "1.1"
             }
             create<MavenPublication>("release") {
                 from(components["release"])
                 artifactId = "FilesPicker"
                 groupId = "com.github.hashimTahir"
-                version = "1.0"
+                version = "1.1"
             }
         }
     }

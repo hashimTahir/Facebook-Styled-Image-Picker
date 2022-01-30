@@ -6,10 +6,12 @@ import android.os.Bundle
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.hashim.filespicker.gallerymodule.Constants
+import com.hashim.filespicker.gallerymodule.Constants.Companion.H_GET_IMAGES
+import com.hashim.filespicker.gallerymodule.Constants.Companion.H_GET_VIDEOS
 import com.hashim.filespicker.gallerymodule.activity.GalleryActivity
 import com.hashim.filespicker.gallerymodule.data.IntentHolder
 import com.hashim.filespickerrunner.databinding.ActivityMainBinding
+import timber.log.Timber
 
 class MainActivity : AppCompatActivity() {
     private lateinit var hMainBinding: ActivityMainBinding
@@ -21,7 +23,7 @@ class MainActivity : AppCompatActivity() {
     ) { result ->
         if (result.resultCode == Activity.RESULT_OK) {
             val hRecieviedImagesList =
-                result.data?.extras?.getParcelableArrayList<IntentHolder>(Constants.H_IMAGE_LIST_IC)
+                result.data?.extras?.getParcelable<IntentHolder>(H_GET_VIDEOS)
             hDisplayAdapter.hSetData(hRecieviedImagesList)
         }
 
@@ -40,7 +42,9 @@ class MainActivity : AppCompatActivity() {
                 Intent(
                     this,
                     GalleryActivity::class.java
-                )
+                ).also {
+                    it.putExtra(H_GET_VIDEOS, "")
+                }
             )
         }
     }
