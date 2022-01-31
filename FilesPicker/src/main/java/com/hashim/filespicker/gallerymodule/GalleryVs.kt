@@ -23,6 +23,7 @@ sealed class GalleryVs {
 
     data class OnViewSetup(
         val hImagesList: List<CheckedImage>? = null,
+        val hIsMultipleSelected: Boolean = false,
     ) : GalleryVs()
 
     data class OnSelectionDone(
@@ -39,6 +40,13 @@ sealed class GalleryVs {
     ) : GalleryVs()
 
     data class OnLaunchCamera(val hPhotoUri: Uri) : GalleryVs()
+
+    data class OnLoadingOrError(
+        val hMessage: String? = null,
+        val hShowLoader: Boolean = false
+    ) : GalleryVs() {
+
+    }
 
 }
 

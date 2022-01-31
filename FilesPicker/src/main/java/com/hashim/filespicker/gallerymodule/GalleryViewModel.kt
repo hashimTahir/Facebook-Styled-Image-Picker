@@ -51,10 +51,10 @@ class GalleryViewModel(
             }
         }
 
-
     }
 
     private suspend fun hFetchWhichFiles(bundle: Bundle) {
+        hEmitLoader(hShowLoader = true)
 
         hIsFetchVideos = if (bundle.containsKey(Constants.H_GET_IMAGES)) {
             false
@@ -63,12 +63,22 @@ class GalleryViewModel(
 
         hEmitMultipleSelectionView()
 
-        hFetchImages()
+        hFetchFiles()
 
     }
 
+    private fun hEmitLoader(
+        hMessage: String? = null,
+        hShowLoader: Boolean = false
+    ) {
+        hGalleryVsMSF.value = OnLoadingOrError(
+            hMessage = hMessage,
+            hShowLoader = hShowLoader
+        )
+    }
 
-    private fun hFetchImages() {
+
+    private suspend fun hFetchFiles() {
 
         val hCheckImageList = when (hIsFetchVideos) {
             true -> {
@@ -102,6 +112,10 @@ class GalleryViewModel(
                 hFolderName = hSelectedFolder?.hFolderName
             )
         }
+
+        delay(30)
+
+        hEmitLoader()
     }
 
     private suspend fun hEmitMultipleSelectionView() {
@@ -130,6 +144,7 @@ class GalleryViewModel(
 
         hGalleryVsMSF.value = OnViewSetup(
             hImagesList = hCheckImageList,
+            hIsMultipleSelected = hIsMultipleSelected
         )
         delay(30)
         hGalleryVsMSF.value = OnUpdateActivity(
@@ -198,10 +213,13 @@ class GalleryViewModel(
     }
 
     private fun hCheckCameraResult(hIsSuccessFull: Boolean) {
-        if (hIsSuccessFull) {
-            hEmitOnSeletionDone()
-        } else {
-            /*Emit Error message*/
+        when {
+            hIsSuccessFull -> {
+                hEmitOnSeletionDone()
+            }
+            else -> {
+                hEmitLoader(hMessage = "Error retrieving files from camera")
+            }
         }
     }
 

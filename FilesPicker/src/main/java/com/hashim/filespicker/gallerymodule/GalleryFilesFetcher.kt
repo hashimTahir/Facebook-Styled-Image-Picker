@@ -16,7 +16,6 @@ import java.util.*
 object GalleryFilesFetcher {
     private val hVideosMap = mutableMapOf<Long, Folder>()
     private val hImagesMap = mutableMapOf<Long, Folder>()
-    private var hCount = 0
 
 
     fun hFetchImages(hContext: Context): List<Folder.ImageFolder> {
@@ -100,7 +99,6 @@ object GalleryFilesFetcher {
 
 
         while (hCursor?.moveToNext() == true) {
-            hCount++
             val hId = hIdColumn?.let { hCursor.getLong(it) }
             val hBucketDisplayName = hBucketDisplayNameCol?.let { hCursor.getString(it) }
             val hBucketId = hBucketIdCol?.let { hCursor.getLong(it) }
@@ -140,8 +138,8 @@ object GalleryFilesFetcher {
                                 this,
                                 hLastModifiedData.toString(),
                                 hContentUri
-                            ).also {
-                                hCheckedCastedFolder.hVideoItemsList.add(it)
+                            ).also { hVideoItem ->
+                                hCheckedCastedFolder.hVideoItemsList.add(hVideoItem)
                             }
                             hVideosMap[hVideoFolder.hFolderId!!] = hCheckedCastedFolder
                         } else {
@@ -154,8 +152,8 @@ object GalleryFilesFetcher {
                                 this,
                                 hLastModifiedData.toString(),
                                 hContentUri
-                            ).also {
-                                hCheckedCastedFolder.hVideoItemsList.add(it)
+                            ).also { hVideoItem ->
+                                hCheckedCastedFolder.hVideoItemsList.add(hVideoItem)
                             }
                         }
                     }

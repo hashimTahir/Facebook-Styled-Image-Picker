@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main_nav.xml"
+    app:startDestination="@id/hHomeFragment">
+
+    <fragment
+        android:id="@+id/hDisplayFragment"
+        android:name="com.hashim.filespickerrunner.DisplayFragment"
+        android:label="ImageFragment"
+        tools:layout="@layout/fragment_display_layout" />
+
+    <fragment
+        android:id="@+id/hHomeFragment"
+        android:name="com.hashim.filespickerrunner.HomeFragment"
+        android:label="HomeFragment"
+        tools:layout="@layout/fragment_home_layout" >
+        <action
+            android:id="@+id/action_hHomeFragment_to_hDisplayFragment"
+            app:destination="@id/hDisplayFragment" />
+    </fragment>
+
+</navigation>

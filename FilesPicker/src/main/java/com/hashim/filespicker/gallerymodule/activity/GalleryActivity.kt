@@ -40,7 +40,7 @@ class GalleryActivity : AppCompatActivity(), View.OnClickListener {
         } else {
             Toast.makeText(
                 this,
-                "Please allow read permision",
+                getString(R.string.please_allow_read_permission),
                 Toast.LENGTH_SHORT
             ).show()
         }
@@ -62,7 +62,11 @@ class GalleryActivity : AppCompatActivity(), View.OnClickListener {
             if (PermissionUtils.hRationaileCheck(this).not()) {
                 PermissionUtils.hShowSettingsDialog(this, hLaunchSettingsContract)
             } else {
-                Toast.makeText(this, "Please allow read permision", Toast.LENGTH_SHORT).show()
+                Toast.makeText(
+                    this,
+                    getString(R.string.please_allow_read_permission),
+                    Toast.LENGTH_SHORT
+                ).show()
                 finish()
             }
         }
@@ -99,13 +103,27 @@ class GalleryActivity : AppCompatActivity(), View.OnClickListener {
             hGalleryViewModel.hGalleryVsSF.collectLatest { galleryVs ->
                 when (galleryVs) {
                     is OnFilesRetrieved -> hUpdateFolderName(galleryVs.hFolderName)
-                    is OnViewSetup -> hSetupViews()
+                    is OnViewSetup -> hSetupViews(galleryVs.hIsMultipleSelected)
                     is OnSelectionDone -> hReturnDataAndFinish(galleryVs.hIntentHolder)
                     is OnUpdateActivity -> hUpdateButtons(galleryVs.hShowNextB)
                     is OnLaunchCamera -> hTakePictureLauncher.launch(galleryVs.hPhotoUri)
+                    is OnLoadingOrError -> hShowLoadingOrMessager(galleryVs)
                     else -> Unit
                 }
             }
+        }
+    }
+
+    private fun hShowLoadingOrMessager(galleryVs: OnLoadingOrError) {
+        hActivityGalleryBinding?.apply {
+            when (galleryVs.hShowLoader) {
+                true -> hProgressbar.visibility = View.VISIBLE
+                false -> hProgressbar.visibility = View.GONE
+            }
+        }
+
+        galleryVs.hMessage?.let {
+            Toast.makeText(this, it, Toast.LENGTH_SHORT).show()
         }
     }
 
@@ -153,14 +171,13 @@ class GalleryActivity : AppCompatActivity(), View.OnClickListener {
         }
     }
 
-    private fun hSetupViews() {
-        var hSelected = false
+    private fun hSetupViews(hIsMultipleSelected: Boolean) {
         hActivityGalleryBinding?.hSelectMultipleCL?.apply {
-            isSelected = !isSelected
-            hSelected = isSelected
+            isSelected = hIsMultipleSelected
         }
 
-        when (hSelected) {
+
+        when (hIsMultipleSelected) {
             true -> {
                 hActivityGalleryBinding?.hSelectMultipleTv?.setTextColor(
                     ContextCompat.getColor(
@@ -215,7 +232,7 @@ class GalleryActivity : AppCompatActivity(), View.OnClickListener {
 
     private fun hInitNavView() {
         hNavHostFragments = supportFragmentManager
-            .findFragmentById(R.id.hMainFragmentContainer)
+            .findFragmentById(R.id.hGalleryFragmentContainer)
                 as NavHostFragment
 
         hNavController = hNavHostFragments.navController
