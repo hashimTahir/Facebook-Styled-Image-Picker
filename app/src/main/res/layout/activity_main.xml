@@ -10,6 +10,7 @@
     <androidx.fragment.app.FragmentContainerView
         android:id="@+id/hMainFragmentContainer"
         android:name="androidx.navigation.fragment.NavHostFragment"
+        app:defaultNavHost="true"
         android:layout_width="match_parent"
         android:layout_height="@dimen/_0dp"
         android:layout_marginTop="@dimen/_2dp"

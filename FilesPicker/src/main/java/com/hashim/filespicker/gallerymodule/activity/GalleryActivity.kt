@@ -27,8 +27,8 @@ import kotlinx.coroutines.launch
 
 class GalleryActivity : AppCompatActivity(), View.OnClickListener {
     private var hActivityGalleryBinding: ActivityGalleryBinding? = null
-    private lateinit var hNavHostFragments: NavHostFragment
-    private lateinit var hNavController: NavController
+    private var hNavHostFragment: NavHostFragment? = null
+    private var hNavController: NavController? = null
     private val hGalleryViewModel by viewModels<GalleryViewModel>()
 
 
@@ -231,13 +231,13 @@ class GalleryActivity : AppCompatActivity(), View.OnClickListener {
 
 
     private fun hInitNavView() {
-        hNavHostFragments = supportFragmentManager
+        hNavHostFragment = supportFragmentManager
             .findFragmentById(R.id.hGalleryFragmentContainer)
                 as NavHostFragment
 
-        hNavController = hNavHostFragments.navController
 
-        hNavController.setGraph(R.navigation.gallery_nav)
+        hNavController = hNavHostFragment?.navController
+        hNavController?.setGraph(R.navigation.gallery_nav)
     }
 
 
@@ -245,10 +245,10 @@ class GalleryActivity : AppCompatActivity(), View.OnClickListener {
         hActivityGalleryBinding?.apply {
             when (view?.id) {
                 hFolderCL.id -> {
-                    if (hNavController.currentDestination?.id == R.id.hFolderFragment) {
-                        hNavController.popBackStack()
+                    if (hNavController?.currentDestination?.id == R.id.hFolderFragment) {
+                        hNavController?.popBackStack()
                     } else {
-                        hNavController.navigate(R.id.action_hGalleryMainFragment_to_folderFragment)
+                        hNavController?.navigate(R.id.action_hGalleryMainFragment_to_folderFragment)
                     }
                     hGalleryViewModel.hOnActivityEvents(OnReloadFiles)
                 }
@@ -261,8 +261,8 @@ class GalleryActivity : AppCompatActivity(), View.OnClickListener {
     }
 
     override fun onBackPressed() {
-        if (hNavController.currentDestination?.id == R.id.hFolderFragment) {
-            hNavController.navigate(R.id.action_hFolderFragment_to_hGalleryMainFragment)
+        if (hNavController?.currentDestination?.id == R.id.hFolderFragment) {
+            hNavController?.navigate(R.id.action_hFolderFragment_to_hGalleryMainFragment)
             hGalleryViewModel.hOnActivityEvents(OnReloadFiles)
         } else {
             super.onBackPressed()

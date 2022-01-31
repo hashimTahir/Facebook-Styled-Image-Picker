@@ -6,6 +6,8 @@ import android.database.Cursor
 import android.media.MediaMetadataRetriever
 import android.net.Uri
 import android.provider.MediaStore
+import com.hashim.filespicker.gallerymodule.Constants.Companion.hDateMonthYearHrsMinFormat
+import com.hashim.filespicker.gallerymodule.Constants.Companion.hHrsMinSecsFormat
 import com.hashim.filespicker.gallerymodule.data.Folder
 import timber.log.Timber
 import java.io.File
@@ -124,37 +126,21 @@ object GalleryFilesFetcher {
                     hFolder.hFolderName = hBucketDisplayName
                     hFolder.hFolderId = hBucketId
 
-                    hFolder.also { hVideoFolder ->
-                        val hCheckVideoFolder = hVideosMap[hVideoFolder.hFolderId!!]
-                        if (hCheckVideoFolder == null) {
-
-                            val hCheckedCastedFolder: Folder.VideoFolder = hVideoFolder
-
-                            hCreateVideoItem(
-                                hPath,
-                                hDisplayName,
-                                hSize,
-                                hFileDuration,
-                                this,
-                                hLastModifiedData.toString(),
-                                hContentUri
-                            ).also { hVideoItem ->
-                                hCheckedCastedFolder.hVideoItemsList.add(hVideoItem)
-                            }
-                            hVideosMap[hVideoFolder.hFolderId!!] = hCheckedCastedFolder
+                    hCreateVideoItem(
+                        hPath,
+                        hDisplayName,
+                        hSize,
+                        hFileDuration,
+                        this,
+                        hLastModifiedData.toString(),
+                        hContentUri
+                    ).also { hVideoItem ->
+                        val hCheckMapFolder = hVideosMap[hFolder.hFolderId!!]
+                        if (hCheckMapFolder != null) {
+                            (hCheckMapFolder as Folder.VideoFolder).hVideoItemsList.add(hVideoItem)
                         } else {
-                            val hCheckedCastedFolder: Folder.VideoFolder = hCheckVideoFolder as Folder.VideoFolder
-                            hCreateVideoItem(
-                                hPath,
-                                hDisplayName,
-                                hSize,
-                                hFileDuration,
-                                this,
-                                hLastModifiedData.toString(),
-                                hContentUri
-                            ).also { hVideoItem ->
-                                hCheckedCastedFolder.hVideoItemsList.add(hVideoItem)
-                            }
+                            hFolder.hVideoItemsList.add(hVideoItem)
+                            hVideosMap[hFolder.hFolderId!!] = hFolder
                         }
                     }
                 }
@@ -204,34 +190,21 @@ object GalleryFilesFetcher {
             val hImageFolder = Folder.ImageFolder()
             hImageFolder.hFolderId = hBucketId
             hImageFolder.hFolderName = hBucketDisplayName
-            hImageFolder.also { imageFolder ->
-
-                var hTempFolder: Folder.ImageFolder? = hImagesMap[imageFolder.hFolderId]
-                        as Folder.ImageFolder?
-
-                if (hTempFolder == null) {
-                    hTempFolder = imageFolder
-
-                    hCreateImageItem(
-                        hPath,
-                        hDisplayName,
-                        hSize,
-                        hContentUri
-                    ).apply {
-                        hTempFolder.hImageItemsList.add(this)
-                    }
-                    hImagesMap[imageFolder.hFolderId!!] = hTempFolder
+            hCreateImageItem(
+                hPath,
+                hDisplayName,
+                hSize,
+                hContentUri
+            ).also { hFolderItem->
+                val hCheckFolderMap = hImagesMap[hImageFolder.hFolderId!!]
+                if (hCheckFolderMap != null) {
+                    (hCheckFolderMap as Folder.ImageFolder).hImageItemsList.add(hFolderItem)
                 } else {
-                    hCreateImageItem(
-                        hPath,
-                        hDisplayName,
-                        hSize,
-                        hContentUri
-                    ).apply {
-                        hTempFolder.hImageItemsList.add(this)
-                    }
+                    hImageFolder.hImageItemsList.add(hFolderItem)
+                    hImagesMap[hImageFolder.hFolderId!!] = hImageFolder
                 }
             }
+
         }
     }
 
@@ -272,8 +245,7 @@ object GalleryFilesFetcher {
 
     private fun hFormatDate(hLastModified: Long?): String? {
         if (hLastModified != null) {
-            val hHrsMinSecsFormat = "dd/MMM/yyyy hh:mm a"
-            return SimpleDateFormat(hHrsMinSecsFormat, Locale.getDefault()).format(hLastModified)
+            return SimpleDateFormat(hDateMonthYearHrsMinFormat, Locale.getDefault()).format(hLastModified)
         }
 
         return null
@@ -286,7 +258,6 @@ object GalleryFilesFetcher {
                 MediaMetadataRetriever().apply {
                     setDataSource(it.fileDescriptor)
                     val hDurationLong = extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION)?.toLong()
-                    val hHrsMinSecsFormat = "HH:mm:ss"
                     return SimpleDateFormat(hHrsMinSecsFormat, Locale.getDefault()).format(hDurationLong)
 
                 }

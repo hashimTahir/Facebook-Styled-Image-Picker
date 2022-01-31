@@ -197,6 +197,7 @@
         android:id="@+id/hGalleryFragmentContainer"
         android:name="androidx.navigation.fragment.NavHostFragment"
         android:layout_width="match_parent"
+        app:defaultNavHost="true"
         android:layout_height="@dimen/_0dp"
         android:layout_marginTop="@dimen/_2dp"
         app:layout_constraintBottom_toBottomOf="parent"

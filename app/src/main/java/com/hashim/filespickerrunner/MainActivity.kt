@@ -8,8 +8,8 @@ import com.hashim.filespickerrunner.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity() {
     private var hMainBinding: ActivityMainBinding? = null
-    private lateinit var hNavHostFragments: NavHostFragment
-    private lateinit var hNavController: NavController
+    private var hNavHostFragment: NavHostFragment? = null
+    private var hNavController: NavController? = null
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -22,18 +22,27 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun hInitNavView() {
-        hNavHostFragments = supportFragmentManager
+        hNavHostFragment = supportFragmentManager
             .findFragmentById(R.id.hMainFragmentContainer)
                 as NavHostFragment
 
-        hNavController = hNavHostFragments.navController
+        hNavController = hNavHostFragment?.navController
 
-        hNavController.setGraph(R.navigation.main_nav)
+        hNavController?.setGraph(R.navigation.main_nav)
+    }
+
+    override fun onBackPressed() {
+        if (hNavController?.currentDestination?.id == R.id.hDisplayFragment)
+            hNavController?.popBackStack()
+        else
+            super.onBackPressed()
     }
 
 
     override fun onDestroy() {
         super.onDestroy()
         hMainBinding = null
+        hNavController = null
+        hNavHostFragment = null
     }
 }

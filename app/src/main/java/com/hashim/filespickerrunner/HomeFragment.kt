@@ -76,7 +76,7 @@ class HomeFragment : Fragment() {
                         requireContext(),
                         GalleryActivity::class.java
                     ).also {
-                        it.putExtra(Constants.H_GET_VIDEOS, "")
+                        it.putExtra(H_GET_VIDEOS, "")
                     }
                 )
             }
