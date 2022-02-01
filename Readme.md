@@ -1,3 +1,6 @@
+
+[![Android Arsenal]( https://img.shields.io/badge/Android%20Arsenal-Facebook--Styled--Image--Picker-green.svg?style=flat )]( https://android-arsenal.com/details/1/8383 )
+
 # Facebook-Styled-File-Picker
 
 - Facebook Styled Gallery Files picker.
