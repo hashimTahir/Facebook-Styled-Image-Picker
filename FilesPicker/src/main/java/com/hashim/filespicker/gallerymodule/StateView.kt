@@ -1,6 +1,6 @@
 package com.hashim.filespicker.gallerymodule
 
-import com.hashim.filespicker.gallerymodule.data.GalleryFolders
+import com.hashim.filespicker.gallerymodule.data.Folder
 import com.hashim.filespicker.gallerymodule.data.PositionHolder
 
 sealed class GalleryStateView {
@@ -30,7 +30,7 @@ sealed class GalleryMainStateView {
 sealed class FolderStateView {
 
     data class OnChangeFolder(
-        val hFolder: GalleryFolders,
+        val hFolder: Folder,
     ) : FolderStateView()
 
     object OnShowFolders : FolderStateView()

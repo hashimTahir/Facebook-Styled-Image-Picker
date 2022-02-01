@@ -7,13 +7,13 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.hashim.filespicker.R
 import com.hashim.filespicker.databinding.ItemFolderBinding
-import com.hashim.filespicker.gallerymodule.data.GalleryFolders
+import com.hashim.filespicker.gallerymodule.data.Folder
 
 class FolderAdapter(
-    val hOnFolderClicked: (GalleryFolders) -> Unit
+    val hOnFolderClicked: (Folder) -> Unit
 ) : RecyclerView.Adapter<FolderVh>() {
 
-    private var hFolderList = listOf<GalleryFolders>()
+    private var hFolderList = listOf<Folder>()
     private var hHighLightFolderList = listOf<Long>()
 
 
@@ -28,17 +28,32 @@ class FolderAdapter(
     }
 
     override fun onBindViewHolder(imageVh: FolderVh, position: Int) {
-        val hFolderItem = hFolderList[position]
+        val hFolder = hFolderList[position]
+
+        val hFolderFileCount: String
+        val hFoldeImageUri: String
+        when (hFolder) {
+            is Folder.ImageFolder -> {
+                hFolderFileCount = hFolder.hImageItemsList.size.toString()
+                hFoldeImageUri = hFolder.hImageItemsList[0].hImageUri.toString()
+
+            }
+            is Folder.VideoFolder -> {
+                hFolderFileCount = hFolder.hVideoItemsList.size.toString()
+                hFoldeImageUri = hFolder.hVideoItemsList[0].hUri.toString()
+            }
+        }
+
         imageVh.hItemFolderBinding.apply {
             Glide.with(hFolderThumbIv.context)
-                .load(hFolderItem.hImageUrisList[0])
+                .load(hFoldeImageUri)
                 .centerCrop()
                 .into(hFolderThumbIv)
 
-            hFolderCountTv.text = hFolderItem.hImageUrisList.size.toString()
-            hFolderNameTv.text = hFolderItem.hFolderName
+            hFolderCountTv.text = hFolderFileCount
+            hFolderNameTv.text = hFolder.hFolderName
 
-            if (hHighLightFolderList.contains(hFolderItem.hFolderId)) {
+            if (hHighLightFolderList.contains(hFolder.hFolderId)) {
                 root.background = ContextCompat.getDrawable(
                     root.context,
                     R.color.light_gray
@@ -48,7 +63,7 @@ class FolderAdapter(
             }
 
             root.setOnClickListener {
-                hOnFolderClicked(hFolderItem)
+                hOnFolderClicked(hFolder)
             }
         }
     }
@@ -57,7 +72,7 @@ class FolderAdapter(
         return hFolderList.size
     }
 
-    fun hSetData(it: List<GalleryFolders>, hHighListFoldersList: List<Long>) {
+    fun hSetData(it: List<Folder>, hHighListFoldersList: List<Long>) {
         hFolderList = it
         hHighLightFolderList = hHighListFoldersList
         notifyDataSetChanged()

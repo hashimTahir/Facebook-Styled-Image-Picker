@@ -6,6 +6,6 @@ import kotlinx.parcelize.Parcelize
 
 @Parcelize
 data class IntentHolder(
-    val hImagePath: String? = null,
-    val hImageUri: String? = null
+    var hVideosList: List<Folder.VideoItem>? = null,
+    var hImageList: List<Folder.ImageItem>? = null
 ) : Parcelable

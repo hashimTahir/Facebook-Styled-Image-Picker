@@ -118,6 +118,7 @@
                 android:layout_marginEnd="@dimen/_8dp"
                 android:background="@null"
                 android:clickable="false"
+                android:ellipsize="end"
                 android:text="@string/gallery"
                 android:textAllCaps="false"
                 android:textColor="@color/black"
@@ -186,18 +187,31 @@
         android:id="@+id/hPartitionView"
         android:layout_width="match_parent"
         android:layout_height="@dimen/_1dp"
-        android:background="@color/light_gray"
         android:layout_marginTop="@dimen/_2dp"
+        android:background="@color/light_gray"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/hButtonCl" />
 
     <androidx.fragment.app.FragmentContainerView
-        android:id="@+id/hMainFragmentContainer"
+        android:id="@+id/hGalleryFragmentContainer"
         android:name="androidx.navigation.fragment.NavHostFragment"
         android:layout_width="match_parent"
+        app:defaultNavHost="true"
         android:layout_height="@dimen/_0dp"
         android:layout_marginTop="@dimen/_2dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/hPartitionView" />
+
+
+    <com.google.android.material.progressindicator.CircularProgressIndicator
+        android:id="@+id/hProgressbar"
+        style="@style/hCircularProgressIndicator"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="visible"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

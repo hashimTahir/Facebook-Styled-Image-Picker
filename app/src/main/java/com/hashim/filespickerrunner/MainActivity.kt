@@ -1,58 +1,48 @@
 package com.hashim.filespickerrunner
 
-import android.app.Activity
-import android.content.Intent
 import android.os.Bundle
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
-import androidx.recyclerview.widget.LinearLayoutManager
-import com.hashim.filespicker.gallerymodule.Constants
-import com.hashim.filespicker.gallerymodule.activity.GalleryActivity
-import com.hashim.filespicker.gallerymodule.data.IntentHolder
+import androidx.navigation.NavController
+import androidx.navigation.fragment.NavHostFragment
 import com.hashim.filespickerrunner.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity() {
-    private lateinit var hMainBinding: ActivityMainBinding
-    private lateinit var hDisplayAdapter: DisplayAdapter
+    private var hMainBinding: ActivityMainBinding? = null
+    private var hNavHostFragment: NavHostFragment? = null
+    private var hNavController: NavController? = null
 
-
-    private val hGalleryActivityLauncher = registerForActivityResult(
-        ActivityResultContracts.StartActivityForResult()
-    ) { result ->
-        if (result.resultCode == Activity.RESULT_OK) {
-            val hRecieviedImagesList =
-                result.data?.extras?.getParcelableArrayList<IntentHolder>(Constants.H_IMAGE_LIST_IC)
-            hDisplayAdapter.hSetData(hRecieviedImagesList)
-        }
-
-    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
 
         super.onCreate(savedInstanceState)
         hMainBinding = ActivityMainBinding.inflate(layoutInflater)
-        setContentView(hMainBinding.root)
+        setContentView(hMainBinding?.root)
 
-        hInitRecyclerView()
+        hInitNavView()
+    }
 
-        hMainBinding.hOpenGalleryB.setOnClickListener {
-            hGalleryActivityLauncher.launch(
-                Intent(
-                    this,
-                    GalleryActivity::class.java
-                )
-            )
-        }
+    private fun hInitNavView() {
+        hNavHostFragment = supportFragmentManager
+            .findFragmentById(R.id.hMainFragmentContainer)
+                as NavHostFragment
+
+        hNavController = hNavHostFragment?.navController
+
+        hNavController?.setGraph(R.navigation.main_nav)
+    }
+
+    override fun onBackPressed() {
+        if (hNavController?.currentDestination?.id == R.id.hDisplayFragment)
+            hNavController?.popBackStack()
+        else
+            super.onBackPressed()
     }
 
 
-    private fun hInitRecyclerView() {
-        hDisplayAdapter = DisplayAdapter()
-
-        hMainBinding.hDisplayRv.apply {
-            layoutManager = LinearLayoutManager(context)
-            adapter = hDisplayAdapter
-        }
-
+    override fun onDestroy() {
+        super.onDestroy()
+        hMainBinding = null
+        hNavController = null
+        hNavHostFragment = null
     }
 }
