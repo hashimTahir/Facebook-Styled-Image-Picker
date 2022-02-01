@@ -1,14 +1,20 @@
 
 [![Android Arsenal]( https://img.shields.io/badge/Android%20Arsenal-Facebook--Styled--Image--Picker-green.svg?style=flat )]( https://android-arsenal.com/details/1/8383 )
 
+
 # Facebook-Styled-File-Picker
 
-- Facebook Styled Gallery Files picker.
 - One or multiple files can be selected.
 - Keeps track of selected files count exactly like Facebook.
 - Selected folders are also shown.
-- Media Store api is used to fetch the image files. So its backward compatible and only read permission is required.
-- Both image Uris and ImagePaths can be retrieved..
+- Media Store api is used to fetch the images/videos files. So its backward
+  compatible and only read permission is required.
+- Both image/Video Uris and ImagePaths can be retrieved.
+
+## Click on image to watch the demo.
+[![Img alt text](https://img.youtube.com/vi/4Q5ntomuck8/3.jpg)](https://www.youtube.com/watch?v=4Q5ntomuck8)
+
+
 
 To get a Git project into your build:
 
@@ -26,7 +32,7 @@ Add it in your root build.gradle at the end of repositories:
 Step 2. Add the dependency
 
 	dependencies {
-	        implementation 'com.github.hashimTahir:Facebook-Styled-Image-Picker:1.1'
+	        implementation 'com.github.hashimTahir:Facebook-Styled-Image-Picker:1.3'
 	}
 
 Step 3. Use the launcher to start the image picker with GalleryActivity like so:
@@ -96,11 +102,6 @@ ImageItem data class holds these details for each video.
         var hImagePath: String? = null,
         var hImageUri: String? = null,
     ) : Parcelable
-
-
-
-
-
 
 
 

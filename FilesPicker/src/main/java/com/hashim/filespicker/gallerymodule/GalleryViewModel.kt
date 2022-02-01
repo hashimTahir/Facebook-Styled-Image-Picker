@@ -123,20 +123,25 @@ class GalleryViewModel(
         if (hSelectedFolder != null) {
             hCheckImageList = when (hIsFetchVideos) {
                 true -> {
-                    (hSelectedFolder as Folder.VideoFolder).hVideoItemsList.map {
-                        CheckedImage(
-                            hImage = it.hUri.toString(),
-                            hIsCheck = hIsMultipleSelected
-                        )
+                    hSelectedFolder?.let {
+                        (it as Folder.VideoFolder).hVideoItemsList.map {
+                            CheckedImage(
+                                hImage = it.hUri.toString(),
+                                hIsCheck = hIsMultipleSelected
+                            )
+                        }
                     }
                 }
                 false -> {
-                    (hSelectedFolder as Folder.ImageFolder).hImageItemsList.map {
-                        CheckedImage(
-                            hImage = it.hImageUri.toString(),
-                            hIsCheck = hIsMultipleSelected
-                        )
+                    hSelectedFolder?.let {
+                        (it as Folder.ImageFolder).hImageItemsList.map {
+                            CheckedImage(
+                                hImage = it.hImageUri.toString(),
+                                hIsCheck = hIsMultipleSelected
+                            )
+                        }
                     }
+
                 }
             }
         }
@@ -146,12 +151,7 @@ class GalleryViewModel(
             hImagesList = hCheckImageList,
             hIsMultipleSelected = hIsMultipleSelected
         )
-        delay(30)
-        hGalleryVsMSF.value = OnUpdateActivity(
-            hShowNextB = hSelectedFoldersPositionsMap[hSelectedFolder?.hFolderId]
-                ?.get(true)?.toMutableList()
-                ?.isNotEmpty() == true
-        )
+        hEmitUpdateActivity()
 
     }
 
@@ -170,20 +170,23 @@ class GalleryViewModel(
     private fun hReloadFiles() {
         val hCheckImageList = when (hIsFetchVideos) {
             true -> {
-
-                (hSelectedFolder as Folder.VideoFolder).hVideoItemsList.map {
-                    CheckedImage(
-                        hImage = it.hUri.toString(),
-                        hIsCheck = hIsMultipleSelected
-                    )
+                hSelectedFolder?.let {
+                    (it as Folder.VideoFolder).hVideoItemsList.map {
+                        CheckedImage(
+                            hImage = it.hUri.toString(),
+                            hIsCheck = hIsMultipleSelected
+                        )
+                    }
                 }
             }
             false -> {
-                (hSelectedFolder as Folder.ImageFolder).hImageItemsList.map {
-                    CheckedImage(
-                        hImage = it.hImageUri.toString(),
-                        hIsCheck = hIsMultipleSelected
-                    )
+                hSelectedFolder?.let {
+                    (it as Folder.ImageFolder).hImageItemsList.map {
+                        CheckedImage(
+                            hImage = it.hImageUri.toString(),
+                            hIsCheck = hIsMultipleSelected
+                        )
+                    }
                 }
             }
         }
@@ -440,9 +443,9 @@ class GalleryViewModel(
 
     private suspend fun hEmitUpdateActivity() {
         delay(30)
+
         hGalleryVsMSF.value = OnUpdateActivity(
-            hShowNextB = hSelectedFoldersPositionsMap[hSelectedFolder?.hFolderId]?.get(true)?.toMutableList()
-                ?.isNotEmpty() == true
+            hShowNextB = hGetSize() > 1
         )
     }
 

@@ -56,17 +56,11 @@ dependencies {
     implementation("androidx.navigation:navigation-ui-ktx:2.3.5")
     implementation("androidx.activity:activity-ktx:1.4.0")
     implementation("androidx.fragment:fragment-ktx:1.4.0")
-    implementation("com.quiph.ui:recyclerviewfastscroller:1.0.0")
     implementation("com.github.bumptech.glide:glide:4.12.0")
     implementation("androidx.lifecycle:lifecycle-extensions:2.2.0")
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.4.0")
     implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.4.0")
     implementation("androidx.lifecycle:lifecycle-livedata-ktx:2.4.0")
-    implementation("com.google.code.gson:gson:2.8.9")
-    implementation("androidx.camera:camera-core:1.1.0-beta01")
-    implementation("androidx.camera:camera-camera2:1.1.0-beta01")
-    implementation("androidx.camera:camera-lifecycle:1.1.0-beta01")
-    implementation("androidx.camera:camera-extensions:1.1.0-beta01")
 
 }
 
@@ -77,13 +71,13 @@ afterEvaluate {
                 from(components["debug"])
                 artifactId = "FilesPicker"
                 groupId = "com.github.hashimTahir"
-                version = "1.2"
+                version = "1.3"
             }
             create<MavenPublication>("release") {
                 from(components["release"])
                 artifactId = "FilesPicker"
                 groupId = "com.github.hashimTahir"
-                version = "1.2"
+                version = "1.3"
             }
         }
     }
