@@ -24,6 +24,7 @@ import com.hashim.filespicker.gallerymodule.PermissionUtils
 import com.hashim.filespicker.gallerymodule.data.IntentHolder
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
+import timber.log.Timber
 
 class GalleryActivity : AppCompatActivity(), View.OnClickListener {
     private var hActivityGalleryBinding: ActivityGalleryBinding? = null

@@ -79,7 +79,6 @@ class GalleryViewModel(
 
 
     private suspend fun hFetchFiles() {
-
         val hCheckImageList = when (hIsFetchVideos) {
             true -> {
                 hFolderList = GalleryFilesFetcher.hFetchVideos(getApplication()).toMutableList()
@@ -90,7 +89,6 @@ class GalleryViewModel(
                         hIsCheck = hIsMultipleSelected
                     )
                 }
-
             }
             false -> {
                 hFolderList = GalleryFilesFetcher.hFetchImages(getApplication()).toMutableList()

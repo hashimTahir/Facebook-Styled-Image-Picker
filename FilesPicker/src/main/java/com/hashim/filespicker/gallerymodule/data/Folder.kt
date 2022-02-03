@@ -31,6 +31,22 @@ sealed class Folder {
         val hImageItemsList: MutableList<ImageItem> = mutableListOf()
     ) : Folder(), Parcelable
 
+    @Parcelize
+    data class AudioFolder(
+        val hAudioItemsList: MutableList<AudioItem> = mutableListOf()
+    ) : Folder(), Parcelable
+
+
+    @Parcelize
+    data class AudioItem(
+        val hName: String? = null,
+        val hTitle: String? = null,
+        val hSize: String? = null,
+        var hPath: String? = null,
+        var hUri: String? = null,
+        var hMime: String? = null,
+        var hDateModified: String? = null
+    ) : Parcelable
 
     @Parcelize
     data class ImageItem(

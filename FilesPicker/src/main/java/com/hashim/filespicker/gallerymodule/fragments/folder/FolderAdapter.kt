@@ -42,6 +42,7 @@ class FolderAdapter(
                 hFolderFileCount = hFolder.hVideoItemsList.size.toString()
                 hFoldeImageUri = hFolder.hVideoItemsList[0].hUri.toString()
             }
+            is Folder.AudioFolder -> TODO()
         }
 
         imageVh.hItemFolderBinding.apply {
