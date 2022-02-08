@@ -27,7 +27,7 @@
 
     <style name="hCircularProgressIndicator" parent="Widget.MaterialComponents.CircularProgressIndicator">
         <item name="materialThemeOverlay">@style/ThemeOverlay.App.CircularProgressIndicator</item>
-        <item name="trackThickness">@dimen/_25dp</item>
+        <item name="trackThickness">@dimen/_20dp</item>
         <item name="indicatorDirectionCircular">clockwise</item>
         <item name="android:indeterminate">true</item>
     </style>

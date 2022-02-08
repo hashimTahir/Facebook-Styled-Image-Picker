@@ -24,6 +24,7 @@ sealed class GalleryVs {
     data class OnViewSetup(
         val hImagesList: List<CheckedImage>? = null,
         val hIsMultipleSelected: Boolean = false,
+        val hToobarTitle: String? = null,
     ) : GalleryVs()
 
     data class OnSelectionDone(

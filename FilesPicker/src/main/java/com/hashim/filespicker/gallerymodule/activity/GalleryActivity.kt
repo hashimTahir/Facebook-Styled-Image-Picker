@@ -15,8 +15,7 @@ import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
 import com.hashim.filespicker.R
 import com.hashim.filespicker.databinding.ActivityGalleryBinding
-import com.hashim.filespicker.gallerymodule.Constants.Companion.H_GET_IMAGES
-import com.hashim.filespicker.gallerymodule.Constants.Companion.H_GET_VIDEOS
+import com.hashim.filespicker.gallerymodule.FileType
 import com.hashim.filespicker.gallerymodule.GalleryStateView.*
 import com.hashim.filespicker.gallerymodule.GalleryViewModel
 import com.hashim.filespicker.gallerymodule.GalleryVs.*
@@ -24,7 +23,6 @@ import com.hashim.filespicker.gallerymodule.PermissionUtils
 import com.hashim.filespicker.gallerymodule.data.IntentHolder
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
-import timber.log.Timber
 
 class GalleryActivity : AppCompatActivity(), View.OnClickListener {
     private var hActivityGalleryBinding: ActivityGalleryBinding? = null
@@ -104,7 +102,7 @@ class GalleryActivity : AppCompatActivity(), View.OnClickListener {
             hGalleryViewModel.hGalleryVsSF.collectLatest { galleryVs ->
                 when (galleryVs) {
                     is OnFilesRetrieved -> hUpdateFolderName(galleryVs.hFolderName)
-                    is OnViewSetup -> hSetupViews(galleryVs.hIsMultipleSelected)
+                    is OnViewSetup -> hSetupViews(galleryVs)
                     is OnSelectionDone -> hReturnDataAndFinish(galleryVs.hIntentHolder)
                     is OnUpdateActivity -> hUpdateButtons(galleryVs.hShowNextB)
                     is OnLaunchCamera -> hTakePictureLauncher.launch(galleryVs.hPhotoUri)
@@ -155,13 +153,19 @@ class GalleryActivity : AppCompatActivity(), View.OnClickListener {
             when {
                 hIntentHolder.hVideosList != null -> {
                     it.putExtra(
-                        H_GET_VIDEOS,
+                        FileType.Videos.toString(),
                         hIntentHolder
                     )
                 }
                 hIntentHolder.hImageList != null -> {
                     it.putExtra(
-                        H_GET_IMAGES,
+                        FileType.Images.toString(),
+                        hIntentHolder
+                    )
+                }
+                hIntentHolder.hAudioList != null -> {
+                    it.putExtra(
+                        FileType.Audios.toString(),
                         hIntentHolder
                     )
                 }
@@ -172,45 +176,49 @@ class GalleryActivity : AppCompatActivity(), View.OnClickListener {
         }
     }
 
-    private fun hSetupViews(hIsMultipleSelected: Boolean) {
-        hActivityGalleryBinding?.hSelectMultipleCL?.apply {
-            isSelected = hIsMultipleSelected
+    private fun hSetupViews(onViewSetup: OnViewSetup) {
+        hActivityGalleryBinding?.apply {
+            hSelectMultipleCL.apply {
+                isSelected = onViewSetup.hIsMultipleSelected
+            }
+            onViewSetup.hToobarTitle?.let {
+                hToolbarTitleTv.text = it
+            }
+            when (onViewSetup.hIsMultipleSelected) {
+                true -> {
+                    hSelectMultipleTv.setTextColor(
+                        ContextCompat.getColor(
+                            this@GalleryActivity,
+                            R.color.colorDarkBlue
+                        )
+                    )
+
+                    DrawableCompat.setTint(
+                        hSelectMultipleIv.drawable!!,
+                        ContextCompat.getColor(
+                            this@GalleryActivity,
+                            R.color.colorDarkBlue
+                        )
+                    )
+                }
+                false -> {
+                    hSelectMultipleTv.setTextColor(
+                        ContextCompat.getColor(
+                            this@GalleryActivity,
+                            R.color.black
+                        )
+                    )
+                    DrawableCompat.setTint(
+                        hSelectMultipleIv.drawable!!,
+                        ContextCompat.getColor(
+                            this@GalleryActivity,
+                            R.color.black
+                        )
+                    )
+                }
+            }
         }
 
-
-        when (hIsMultipleSelected) {
-            true -> {
-                hActivityGalleryBinding?.hSelectMultipleTv?.setTextColor(
-                    ContextCompat.getColor(
-                        this,
-                        R.color.colorDarkBlue
-                    )
-                )
-
-                DrawableCompat.setTint(
-                    hActivityGalleryBinding?.hSelectMultipleIv?.drawable!!,
-                    ContextCompat.getColor(
-                        applicationContext,
-                        R.color.colorDarkBlue
-                    )
-                )
-            }
-            false -> {
-                hActivityGalleryBinding?.hSelectMultipleTv?.setTextColor(
-                    ContextCompat.getColor(
-                        this,
-                        R.color.black
-                    )
-                )
-                DrawableCompat.setTint(
-                    hActivityGalleryBinding?.hSelectMultipleIv?.drawable!!,
-                    ContextCompat.getColor(
-                        applicationContext,
-                        R.color.black
-                    )
-                )
-            }
-        }
     }
 
     private fun hUpdateFolderName(hFolderName: String?) {

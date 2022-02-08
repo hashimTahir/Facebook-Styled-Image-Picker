@@ -39,8 +39,7 @@ class GalleryViewModel(
 
     private val hUsersSelectedFiles = mutableListOf<Folder>()
 
-    private var hIsFetchVideos = false
-
+    private var hFileType: FileType? = null
     private val hSelectedFoldersPositionsMap = mutableMapOf<Long, MutableMap<Boolean, MutableList<PositionHolder>>>()
 
     fun hFetchFiles(extras: Bundle?) {
@@ -56,10 +55,14 @@ class GalleryViewModel(
     private suspend fun hFetchWhichFiles(bundle: Bundle) {
         hEmitLoader(hShowLoader = true)
 
-        hIsFetchVideos = if (bundle.containsKey(Constants.H_GET_IMAGES)) {
-            false
-        } else
-            bundle.containsKey(Constants.H_GET_VIDEOS)
+
+
+        hFileType = when {
+            bundle.containsKey(FileType.Images.toString()) -> FileType.Images
+            bundle.containsKey(FileType.Videos.toString()) -> FileType.Videos
+            bundle.containsKey(FileType.Audios.toString()) -> FileType.Audios
+            else -> null
+        }
 
         hEmitMultipleSelectionView()
 
@@ -79,8 +82,29 @@ class GalleryViewModel(
 
 
     private suspend fun hFetchFiles() {
-        val hCheckImageList = when (hIsFetchVideos) {
-            true -> {
+        val hCheckImageList = when (hFileType) {
+
+            FileType.Audios -> {
+                hFolderList = GalleryFilesFetcher.hFetchAudios(getApplication()).toMutableList()
+                hSelectedFolder = hFolderList[0]
+                (hSelectedFolder as Folder.AudioFolder).hAudioItemsList.map {
+                    CheckedImage(
+                        hImage = it.hUri.toString(),
+                        hIsCheck = hIsMultipleSelected
+                    )
+                }
+            }
+            FileType.Images -> {
+                hFolderList = GalleryFilesFetcher.hFetchImages(getApplication()).toMutableList()
+                hSelectedFolder = hFolderList[0]
+                (hSelectedFolder as Folder.ImageFolder).hImageItemsList.map {
+                    CheckedImage(
+                        hImage = it.hImageUri.toString(),
+                        hIsCheck = hIsMultipleSelected
+                    )
+                }
+            }
+            FileType.Videos -> {
                 hFolderList = GalleryFilesFetcher.hFetchVideos(getApplication()).toMutableList()
                 hSelectedFolder = hFolderList[0]
                 (hSelectedFolder as Folder.VideoFolder).hVideoItemsList.map {
@@ -90,17 +114,7 @@ class GalleryViewModel(
                     )
                 }
             }
-            false -> {
-                hFolderList = GalleryFilesFetcher.hFetchImages(getApplication()).toMutableList()
-                hSelectedFolder = hFolderList[0]
-                (hSelectedFolder as Folder.ImageFolder).hImageItemsList.map {
-                    CheckedImage(
-                        hImage = it.hImageUri.toString(),
-                        hIsCheck = hIsMultipleSelected
-                    )
-                }
-
-            }
+            else -> null
         }
 
         if (hFolderList.isNotEmpty()) {
@@ -119,18 +133,20 @@ class GalleryViewModel(
     private suspend fun hEmitMultipleSelectionView() {
         var hCheckImageList: List<CheckedImage>? = null
         if (hSelectedFolder != null) {
-            hCheckImageList = when (hIsFetchVideos) {
-                true -> {
+            hCheckImageList = when (hFileType) {
+
+                FileType.Audios -> {
                     hSelectedFolder?.let {
-                        (it as Folder.VideoFolder).hVideoItemsList.map {
+                        (it as Folder.AudioFolder).hAudioItemsList.map {
                             CheckedImage(
                                 hImage = it.hUri.toString(),
                                 hIsCheck = hIsMultipleSelected
                             )
                         }
                     }
+
                 }
-                false -> {
+                FileType.Images -> {
                     hSelectedFolder?.let {
                         (it as Folder.ImageFolder).hImageItemsList.map {
                             CheckedImage(
@@ -141,13 +157,30 @@ class GalleryViewModel(
                     }
 
                 }
+                FileType.Videos -> {
+                    hSelectedFolder?.let {
+                        (it as Folder.VideoFolder).hVideoItemsList.map {
+                            CheckedImage(
+                                hImage = it.hUri.toString(),
+                                hIsCheck = hIsMultipleSelected
+                            )
+                        }
+                    }
+                }
+                null -> null
             }
         }
 
 
         hGalleryVsMSF.value = OnViewSetup(
             hImagesList = hCheckImageList,
-            hIsMultipleSelected = hIsMultipleSelected
+            hIsMultipleSelected = hIsMultipleSelected,
+            hToobarTitle = when (hFileType) {
+                FileType.Audios -> "Pick Audios"
+                FileType.Images -> "Pick Images"
+                FileType.Videos -> "Pick Videos"
+                null -> null
+            }
         )
         hEmitUpdateActivity()
 
@@ -166,10 +199,11 @@ class GalleryViewModel(
     }
 
     private fun hReloadFiles() {
-        val hCheckImageList = when (hIsFetchVideos) {
-            true -> {
+        val hCheckImageList = when (hFileType) {
+
+            FileType.Audios -> {
                 hSelectedFolder?.let {
-                    (it as Folder.VideoFolder).hVideoItemsList.map {
+                    (it as Folder.AudioFolder).hAudioItemsList.map {
                         CheckedImage(
                             hImage = it.hUri.toString(),
                             hIsCheck = hIsMultipleSelected
@@ -177,7 +211,7 @@ class GalleryViewModel(
                     }
                 }
             }
-            false -> {
+            FileType.Images -> {
                 hSelectedFolder?.let {
                     (it as Folder.ImageFolder).hImageItemsList.map {
                         CheckedImage(
@@ -187,6 +221,17 @@ class GalleryViewModel(
                     }
                 }
             }
+            FileType.Videos -> {
+                hSelectedFolder?.let {
+                    (it as Folder.VideoFolder).hVideoItemsList.map {
+                        CheckedImage(
+                            hImage = it.hUri.toString(),
+                            hIsCheck = hIsMultipleSelected
+                        )
+                    }
+                }
+            }
+            null -> null
         }
 
 
@@ -560,30 +605,40 @@ class GalleryViewModel(
     private suspend fun hChangeFolder(hFolder: Folder) {
         hSelectedFolder = hFolder
 
-        val hCheckImageList: List<CheckedImage>
-        when (hIsFetchVideos) {
-            true -> {
-                hSelectedFolder as Folder.VideoFolder
-                hCheckImageList = (hSelectedFolder as Folder.VideoFolder).hVideoItemsList.map {
+        var hCheckFileList: List<CheckedImage>? = null
+        when (hFileType) {
+            FileType.Audios -> {
+                hSelectedFolder as Folder.AudioFolder
+                hCheckFileList = (hSelectedFolder as Folder.AudioFolder).hAudioItemsList.map {
                     CheckedImage(
                         hImage = it.hUri.toString(),
                         hIsCheck = hIsMultipleSelected
                     )
                 }
             }
-            false -> {
-                hCheckImageList = (hSelectedFolder as Folder.ImageFolder).hImageItemsList.map {
+            FileType.Images -> {
+                hCheckFileList = (hSelectedFolder as Folder.ImageFolder).hImageItemsList.map {
                     CheckedImage(
                         hImage = it.hImageUri.toString(),
                         hIsCheck = hIsMultipleSelected
                     )
                 }
             }
+            FileType.Videos -> {
+                hSelectedFolder as Folder.VideoFolder
+                hCheckFileList = (hSelectedFolder as Folder.VideoFolder).hVideoItemsList.map {
+                    CheckedImage(
+                        hImage = it.hUri.toString(),
+                        hIsCheck = hIsMultipleSelected
+                    )
+                }
+            }
+            else -> Unit
         }
 
         hGalleryVsMSF.value = OnFilesRetrieved(
             hFoldersList = hFolderList,
-            hImagesList = hCheckImageList,
+            hImagesList = hCheckFileList,
             hFolderName = hSelectedFolder?.hFolderName
         )
 
