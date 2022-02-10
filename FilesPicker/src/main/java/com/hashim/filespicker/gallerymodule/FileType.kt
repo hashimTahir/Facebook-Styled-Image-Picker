@@ -18,4 +18,6 @@ sealed class FileType {
             return "FileType:Audios"
         }
     }
+
+    object None : FileType()
 }

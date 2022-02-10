@@ -13,4 +13,5 @@
     <color name="colorLightBlue">#E7F3FF</color>
     <color name="colorDarkBlue">#00008B</color>
     <color name="colorRedBlue">#F44336</color>
+    <color name="hCardAudioColor">#1820610A</color>
 </resources>

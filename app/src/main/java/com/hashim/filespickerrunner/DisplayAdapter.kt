@@ -4,7 +4,7 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
-import com.hashim.filespicker.gallerymodule.data.Folder
+import com.hashim.filespicker.gallerymodule.data.ImageIh
 import com.hashim.filespickerrunner.databinding.ItemDisplayImageBinding
 
 class DisplayAdapter : RecyclerView.Adapter<DisplayAdapter.DisplayVh>() {
@@ -15,7 +15,7 @@ class DisplayAdapter : RecyclerView.Adapter<DisplayAdapter.DisplayVh>() {
     ) : RecyclerView.ViewHolder(hItemDisplayImageBinding.root)
 
 
-    private var hImageList: List<Folder.ImageItem> = listOf()
+    private var hImageList: List<ImageIh> = listOf()
 
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): DisplayVh {
@@ -31,7 +31,7 @@ class DisplayAdapter : RecyclerView.Adapter<DisplayAdapter.DisplayVh>() {
     override fun onBindViewHolder(hDisplayVh: DisplayVh, position: Int) {
         hDisplayVh.hItemDisplayImageBinding.apply {
             Glide.with(hDisplayIv.context)
-                .load(hImageList[position].hImageUri)
+                .load(hImageList[position].hUri)
                 .centerCrop()
                 .into(hDisplayIv)
         }
@@ -41,7 +41,7 @@ class DisplayAdapter : RecyclerView.Adapter<DisplayAdapter.DisplayVh>() {
         return hImageList.size
     }
 
-    fun hSetData(imageList: List<Folder.ImageItem>) {
+    fun hSetData(imageList: List<ImageIh>) {
         imageList.let {
             hImageList = it
             notifyDataSetChanged()

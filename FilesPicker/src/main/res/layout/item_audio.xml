@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/hItemAudioCv"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginTop="@dimen/_5dp"
+    android:background="@color/hCardAudioColor"
+    app:cardCornerRadius="@dimen/_5dp"
+    app:cardElevation="@dimen/_5dp"
+    app:cardUseCompatPadding="true">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        style="@style/hSelectableItemBackgroundBorder"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="5dp">
+
+        <ImageView
+            android:id="@+id/hAudioThumbIv"
+            android:layout_width="@dimen/_40dp"
+            android:layout_height="@dimen/_40dp"
+            android:layout_marginStart="@dimen/_15dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/hAudioNameTv"
+            style="@style/TextAppearance.AppCompat.Headline"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:singleLine="true"
+            android:textSize="@dimen/_10sp"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toTopOf="@+id/hArtistNameTv"
+            app:layout_constraintEnd_toStartOf="@id/hPlayIv"
+            app:layout_constraintStart_toEndOf="@+id/hAudioThumbIv"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/hArtistNameTv"
+            android:layout_width="@dimen/_0dp"
+            android:layout_height="wrap_content"
+            android:textSize="@dimen/_9sp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="@+id/hAudioNameTv"
+            app:layout_constraintStart_toStartOf="@+id/hAudioNameTv"
+            app:layout_constraintTop_toBottomOf="@+id/hAudioNameTv" />
+
+        <ImageView
+            android:id="@+id/hPlayIv"
+            style="@style/hSelectableItemBackgroundBorder"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="@dimen/_5dp"
+            android:padding="@dimen/_5dp"
+            android:src="@drawable/ic_play"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</com.google.android.material.card.MaterialCardView>

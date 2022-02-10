@@ -10,7 +10,9 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.GridLayoutManager
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.hashim.filespicker.databinding.FragmentGalleryMainBinding
+import com.hashim.filespicker.gallerymodule.FileType
 import com.hashim.filespicker.gallerymodule.GalleryMainStateView.OnAddFiles
 import com.hashim.filespicker.gallerymodule.GalleryViewModel
 import com.hashim.filespicker.gallerymodule.GalleryVs.*
@@ -19,9 +21,7 @@ import kotlinx.coroutines.flow.collectLatest
 class GalleryMainFragment : Fragment() {
     private var hFragmentGalleryMainBinding: FragmentGalleryMainBinding? = null
     private val hGalleryViewModel by activityViewModels<GalleryViewModel>()
-    private lateinit var hImagesAdapter: ImagesAdapter
-
-
+    private var hFilesAdapter: FilesAdapter? = null
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -36,41 +36,45 @@ class GalleryMainFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
         hInitRecyclerView()
 
         hSubscribeObservers()
     }
 
     private fun hInitRecyclerView() {
-        hImagesAdapter = ImagesAdapter { hCheckedImage, position ->
-            hGalleryViewModel.hOnGalleryMainFragment(
-                OnAddFiles(
-                    hPostionHolder = hCheckedImage,
-                    hPosition = position,
+        if (hFilesAdapter == null) {
+            hFilesAdapter = FilesAdapter { hCheckedImage, position ->
+                hGalleryViewModel.hOnGalleryMainFragment(
+                    OnAddFiles(
+                        hPostionHolder = hCheckedImage,
+                        hPosition = position,
+                    )
                 )
-            )
+            }
+        }
+
+
+        val hLayoutManager = when (hGalleryViewModel.hGetFileType()) {
+            FileType.Audios -> LinearLayoutManager(requireActivity())
+            else -> GridLayoutManager(requireActivity(), 3)
         }
         hFragmentGalleryMainBinding?.hMainRv?.apply {
-            layoutManager = GridLayoutManager(context, 3)
-            adapter = hImagesAdapter
+            layoutManager = hLayoutManager
+            adapter = hFilesAdapter
         }
     }
 
     private fun hSubscribeObservers() {
-        lifecycleScope.launchWhenCreated {
+
+        viewLifecycleOwner.lifecycleScope.launchWhenCreated {
             hGalleryViewModel.hGalleryVsSF.flowWithLifecycle(
                 lifecycle,
                 Lifecycle.State.STARTED
             ).collectLatest { galleryVs ->
                 when (galleryVs) {
-                    is OnFilesRetrieved -> hSetupView(
-                        onFilesRetrieved = galleryVs
-                    )
-                    is OnViewSetup -> hSetupView(
-                        onViewSetup = galleryVs
-                    )
-                    is OnUpdateAdapter -> hImagesAdapter.hUpdate(galleryVs)
+                    is OnFilesRetrieved -> hSetupView(onFilesRetrieved = galleryVs)
+                    is OnUpdateAdapter -> hFilesAdapter?.hUpdate(galleryVs)
+                    is OnViewSetup -> hSetupView(onViewSetup = galleryVs)
                     else -> Unit
                 }
             }
@@ -82,12 +86,13 @@ class GalleryMainFragment : Fragment() {
         onFilesRetrieved: OnFilesRetrieved? = null,
         onViewSetup: OnViewSetup? = null,
     ) {
-        onFilesRetrieved?.hImagesList?.let {
-            hImagesAdapter.hSetData(it)
+        onViewSetup?.hCheckImageList?.let {
+            hFilesAdapter?.hSetData(it)
         }
-        onViewSetup?.hImagesList?.let {
-            hImagesAdapter.hSetData(it)
+        onFilesRetrieved?.hFilesList?.let {
+            hFilesAdapter?.hSetData(it)
         }
+
     }
 
 

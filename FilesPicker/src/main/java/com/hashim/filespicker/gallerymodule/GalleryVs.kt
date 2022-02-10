@@ -1,7 +1,7 @@
 package com.hashim.filespicker.gallerymodule
 
 import android.net.Uri
-import com.hashim.filespicker.gallerymodule.data.CheckedImage
+import com.hashim.filespicker.gallerymodule.data.CheckedFile
 import com.hashim.filespicker.gallerymodule.data.Folder
 import com.hashim.filespicker.gallerymodule.data.IntentHolder
 import com.hashim.filespicker.gallerymodule.data.PositionHolder
@@ -9,7 +9,7 @@ import com.hashim.filespicker.gallerymodule.data.PositionHolder
 sealed class GalleryVs {
     data class OnFilesRetrieved(
         val hFoldersList: List<Folder>? = null,
-        val hImagesList: List<CheckedImage>? = null,
+        val hFilesList: List<CheckedFile>? = null,
         val hFolderName: String? = null
     ) : GalleryVs()
 
@@ -22,9 +22,9 @@ sealed class GalleryVs {
     object StateNone : GalleryVs()
 
     data class OnViewSetup(
-        val hImagesList: List<CheckedImage>? = null,
         val hIsMultipleSelected: Boolean = false,
         val hToobarTitle: String? = null,
+        val hCheckImageList: List<CheckedFile>?=null,
     ) : GalleryVs()
 
     data class OnSelectionDone(
@@ -45,9 +45,8 @@ sealed class GalleryVs {
     data class OnLoadingOrError(
         val hMessage: String? = null,
         val hShowLoader: Boolean = false
-    ) : GalleryVs() {
+    ) : GalleryVs()
 
-    }
 
 }
 

@@ -3,6 +3,8 @@ package com.hashim.filespicker.gallerymodule
 import android.content.ContentUris
 import android.content.Context
 import android.database.Cursor
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.media.MediaMetadataRetriever
 import android.net.Uri
 import android.os.Build
@@ -103,11 +105,11 @@ object GalleryFilesFetcher {
         when (hProjectionType) {
             ProjectionType.Image -> hExtractImagesData(hCursor)
             ProjectionType.Video -> hExtractVideosData(hCursor, hContext)
-            ProjectionType.Audio -> hExtractAudiosData(hCursor)
+            ProjectionType.Audio -> hExtractAudiosData(hCursor, hContext)
         }
     }
 
-    private fun hExtractAudiosData(hCursor: Cursor?) {
+    private fun hExtractAudiosData(hCursor: Cursor?, hContext: Context) {
         val hIdColumn = hCursor?.getColumnIndexOrThrow(MediaStore.Audio.Media._ID)
 
         var hBucketIdCol: Int? = null
@@ -140,7 +142,6 @@ object GalleryFilesFetcher {
         val hDateCol = hCursor?.getColumnIndexOrThrow(
             MediaStore.Audio.Media.DATE_MODIFIED
         )
-
         while (hCursor?.moveToNext() == true) {
             val hId = hIdColumn?.let {
                 hCursor.getLong(it)
@@ -186,14 +187,16 @@ object GalleryFilesFetcher {
                 hFolder.hFolderId = Constants.H_PRE_ANDROID_10_ID
             }
 
+
             hCreateAudioItem(
-                hUri = hContentUri,
+                uri = hContentUri,
                 hDisplayName = hDisplayName,
                 hSize = hSize,
                 hPath = hPath,
                 hTitle = hTitle,
                 hMime = hMime,
-                hDateModified = hFormatDate(hDate)
+                hDateModified = hFormatDate(hDate),
+                hAlbumArt = hGetAlbumArt(hContext, hContentUri)
             ).also { hAudioItem ->
                 val hCheckMapFolder = hAudioMap[hFolder.hFolderId!!]
                 if (hCheckMapFolder != null) {
@@ -203,29 +206,30 @@ object GalleryFilesFetcher {
                     hAudioMap[hFolder.hFolderId!!] = hFolder
                 }
             }
-
-
         }
     }
 
     private fun hCreateAudioItem(
-        hUri: Uri?,
+        uri: Uri?,
         hDisplayName: String?,
         hSize: String?,
         hPath: String?,
         hTitle: String?,
         hMime: String?,
-        hDateModified: String?
+        hDateModified: String?,
+        hAlbumArt: Bitmap?
     ): Folder.AudioItem {
         return Folder.AudioItem(
-            hPath = hPath,
-            hName = hDisplayName,
-            hSize = hSize,
-            hUri = hUri.toString(),
             hMime = hMime,
             hDateModified = hDateModified,
-            hTitle = hTitle
-        )
+            hTitle = hTitle,
+            hAlbumArt = hAlbumArt
+        ).apply {
+            hFilePath = hPath
+            hFileName = hDisplayName
+            hFileSize = hSize
+            hUri = uri.toString()
+        }
     }
 
     private fun hExtractVideosData(hCursor: Cursor?, hContext: Context) {
@@ -313,9 +317,11 @@ object GalleryFilesFetcher {
         val hSizeCol = hCursor?.getColumnIndexOrThrow(
             MediaStore.Images.Media.SIZE
         )
-
         val hDataCol = hCursor?.getColumnIndexOrThrow(
             MediaStore.Images.Media.DATA
+        )
+        val hDateCol = hCursor?.getColumnIndexOrThrow(
+            MediaStore.Images.Media.DATE_MODIFIED
         )
 
 
@@ -326,6 +332,7 @@ object GalleryFilesFetcher {
             val hDisplayName = hDisplayNameCol?.let { hCursor.getString(it) }
             val hSize = hSizeCol?.let { hCursor.getString(it) }
             val hPath = hDataCol?.let { hCursor.getString(it) }
+            val hDate = hDateCol?.let { hCursor.getLong(it) }
 
 
             val hContentUri: Uri? = hId?.let {
@@ -339,10 +346,11 @@ object GalleryFilesFetcher {
             hImageFolder.hFolderId = hBucketId
             hImageFolder.hFolderName = hBucketDisplayName
             hCreateImageItem(
-                hPath,
-                hDisplayName,
-                hSize,
-                hContentUri
+                hPath = hPath,
+                hDisplayName = hDisplayName,
+                hSize = hSize,
+                hContentUri = hContentUri,
+                hDate = hDate
             ).also { hFolderItem ->
                 val hCheckFolderMap = hImagesMap[hImageFolder.hFolderId!!]
                 if (hCheckFolderMap != null) {
@@ -360,14 +368,16 @@ object GalleryFilesFetcher {
         hPath: String?,
         hDisplayName: String?,
         hSize: String?,
-        hContentUri: Uri?
+        hContentUri: Uri?,
+        hDate: Long?
     ): Folder.ImageItem {
-        return Folder.ImageItem(
-            hItemName = hDisplayName,
-            hSize = hSize,
-            hImagePath = hPath,
-            hImageUri = hContentUri.toString()
-        )
+        return Folder.ImageItem().apply {
+            hFileName = hDisplayName
+            hFilePath = hPath
+            hFileSize = hSize
+            hUri = hContentUri.toString()
+            hModifiedDate = hDate
+        }
     }
 
     private fun hCreateVideoItem(
@@ -380,15 +390,16 @@ object GalleryFilesFetcher {
         hContentUri: Uri?
     ): Folder.VideoItem {
         return Folder.VideoItem(
-            hFilePath = hPath,
-            hFileName = hDisplayName,
-            hFileSize = hSize,
             hFileDuaration = hFileDuration,
             hModifiedDate = hFile.lastModified(),
             hFileSizeForOrder = hFile.length().toString(),
             hFileDateTime = hLastModifiedData,
+        ).apply {
+            hFilePath = hPath
+            hFileName = hDisplayName
+            hFileSize = hSize
             hUri = hContentUri.toString()
-        )
+        }
     }
 
     private fun hFormatDate(hLastModified: Long?): String? {
@@ -397,6 +408,27 @@ object GalleryFilesFetcher {
         }
 
         return null
+    }
+
+    private fun hGetAlbumArt(hContext: Context, hContentUri: Uri?): Bitmap? {
+        MediaMetadataRetriever().apply {
+            var hArtBitmap: Bitmap? = null
+            setDataSource(hContext, hContentUri)
+            val hByteArray: ByteArray? = embeddedPicture
+
+            if (hByteArray != null)
+                hArtBitmap = BitmapFactory.decodeByteArray(
+                    hByteArray,
+                    0,
+                    hByteArray.size,
+                    BitmapFactory.Options()
+                )
+
+            return hArtBitmap
+
+        }
+
+
     }
 
     private fun hGetDuration(hPath: Uri?, context: Context): String? {
@@ -440,6 +472,7 @@ private fun hGetProjection(hProjectionType: ProjectionType): Array<String> {
             MediaStore.Images.Media.SIZE,
             MediaStore.Images.Media.DISPLAY_NAME,
             MediaStore.Images.Media.DATA,
+            MediaStore.Images.Media.DATE_MODIFIED
         )
         is ProjectionType.Audio -> {
             val hAudioProjectionList = arrayListOf<String>()

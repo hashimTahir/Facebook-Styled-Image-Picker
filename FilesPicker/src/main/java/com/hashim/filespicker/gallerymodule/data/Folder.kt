@@ -1,5 +1,6 @@
 package com.hashim.filespicker.gallerymodule.data
 
+import android.graphics.Bitmap
 import android.os.Parcelable
 import kotlinx.parcelize.Parcelize
 
@@ -14,19 +15,6 @@ sealed class Folder {
 
 
     @Parcelize
-    data class VideoItem(
-        var hFilePath: String? = null,
-        val hUri: String? = null,
-        var hFileName: String? = null,
-        var hFileSize: String? = null,
-        var hFileDuaration: String? = null,
-        var hModifiedDate: Long? = null,
-        var hFileSizeForOrder: String? = null,
-        var hFileDateTime: String? = null
-    ) : Parcelable
-
-
-    @Parcelize
     data class ImageFolder(
         val hImageItemsList: MutableList<ImageItem> = mutableListOf()
     ) : Folder(), Parcelable
@@ -38,22 +26,34 @@ sealed class Folder {
 
 
     @Parcelize
-    data class AudioItem(
-        val hName: String? = null,
-        val hTitle: String? = null,
-        val hSize: String? = null,
-        var hPath: String? = null,
+    open class Item(
+        var hFileName: String? = null,
+        var hFilePath: String? = null,
         var hUri: String? = null,
-        var hMime: String? = null,
-        var hDateModified: String? = null
+        var hFileSize: String? = null,
     ) : Parcelable
+
+
+    @Parcelize
+    data class AudioItem(
+        val hTitle: String? = null,
+        var hMime: String? = null,
+        var hDateModified: String? = null,
+        val hAlbumArt: Bitmap? = null
+    ) : Item(), Parcelable
 
     @Parcelize
     data class ImageItem(
-        val hItemName: String? = null,
-        val hSize: String? = null,
-        var hImagePath: String? = null,
-        var hImageUri: String? = null,
-    ) : Parcelable
+        var hModifiedDate: Long? = null,
+    ) : Item(), Parcelable
+
+
+    @Parcelize
+    data class VideoItem(
+        var hFileDuaration: String? = null,
+        var hModifiedDate: Long? = null,
+        var hFileSizeForOrder: String? = null,
+        var hFileDateTime: String? = null
+    ) : Item(), Parcelable
 
 }

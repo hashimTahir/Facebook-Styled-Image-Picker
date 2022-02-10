@@ -6,7 +6,7 @@ import androidx.core.net.toUri
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.google.android.exoplayer2.MediaItem
-import com.hashim.filespicker.gallerymodule.data.Folder
+import com.hashim.filespicker.gallerymodule.data.VideoIh
 import com.hashim.filespickerrunner.databinding.ItemVideoBinding
 
 class VideoVh(
@@ -14,7 +14,7 @@ class VideoVh(
 ) : RecyclerView.ViewHolder(hItemVideoBinding.root) {
 
     lateinit var hVideoPreview: MediaItem
-    fun hBind(hVideoItem: Folder.VideoItem) {
+    fun hBind(hVideoItem: VideoIh) {
         hItemVideoBinding.root.tag = this
 
         hVideoPreview = hVideoItem.hUri?.toUri()?.let { MediaItem.fromUri(it) }!!

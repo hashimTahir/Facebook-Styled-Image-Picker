@@ -31,25 +31,32 @@ class FolderAdapter(
         val hFolder = hFolderList[position]
 
         val hFolderFileCount: String
-        val hFoldeImageUri: String
+        val hFoldeImageUri: Any?
         when (hFolder) {
             is Folder.ImageFolder -> {
                 hFolderFileCount = hFolder.hImageItemsList.size.toString()
-                hFoldeImageUri = hFolder.hImageItemsList[0].hImageUri.toString()
+                hFoldeImageUri = hFolder.hImageItemsList[0].hUri.toString()
 
             }
             is Folder.VideoFolder -> {
                 hFolderFileCount = hFolder.hVideoItemsList.size.toString()
                 hFoldeImageUri = hFolder.hVideoItemsList[0].hUri.toString()
             }
-            is Folder.AudioFolder -> TODO()
+            is Folder.AudioFolder -> {
+                hFolderFileCount = hFolder.hAudioItemsList.size.toString()
+                hFoldeImageUri = hFolder.hAudioItemsList[0].hAlbumArt
+            }
         }
 
+
         imageVh.hItemFolderBinding.apply {
-            Glide.with(hFolderThumbIv.context)
-                .load(hFoldeImageUri)
-                .centerCrop()
-                .into(hFolderThumbIv)
+
+            hFoldeImageUri?.let {
+                Glide.with(hFolderThumbIv.context)
+                    .load(it)
+                    .centerCrop()
+                    .into(hFolderThumbIv)
+            }
 
             hFolderCountTv.text = hFolderFileCount
             hFolderNameTv.text = hFolder.hFolderName

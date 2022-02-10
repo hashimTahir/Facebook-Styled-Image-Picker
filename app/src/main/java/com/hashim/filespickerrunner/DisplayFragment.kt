@@ -6,8 +6,9 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.hashim.filespicker.gallerymodule.data.Folder
+import com.hashim.filespicker.gallerymodule.data.ImageIh
 import com.hashim.filespicker.gallerymodule.data.IntentHolder
+import com.hashim.filespicker.gallerymodule.data.VideoIh
 import com.hashim.filespickerrunner.Constants.Companion.H_DATA_IC
 import com.hashim.filespickerrunner.databinding.FragmentDisplayLayoutBinding
 
@@ -23,7 +24,7 @@ class DisplayFragment : Fragment() {
         hIntentHolder = arguments?.getParcelable(H_DATA_IC)
     }
 
-    private fun hInitImageAdapter(list: List<Folder.ImageItem>) {
+    private fun hInitImageAdapter(list: List<ImageIh>) {
         hFragmentDisplayLayoutBinding?.apply {
             hExoPlayerRv.visibility = View.GONE
             hDisplayRv.visibility = View.VISIBLE
@@ -38,7 +39,7 @@ class DisplayFragment : Fragment() {
 
     }
 
-    private fun hInitVideoAdapter(list: List<Folder.VideoItem>) {
+    private fun hInitVideoAdapter(list: List<VideoIh>) {
         hFragmentDisplayLayoutBinding?.apply {
             hExoPlayerRv.visibility = View.VISIBLE
             hDisplayRv.visibility = View.GONE
@@ -74,7 +75,8 @@ class DisplayFragment : Fragment() {
 
         when {
             hIntentHolder?.hImageList.isNullOrEmpty().not() -> hInitImageAdapter(hIntentHolder?.hImageList!!)
-            hIntentHolder?.hVideosList.isNullOrEmpty().not() -> hInitVideoAdapter(hIntentHolder?.hVideosList!!)
+//            hIntentHolder?.hAudioList.isNullOrEmpty().not() -> hInitVideoAdapter(hIntentHolder?.hVideosList!!)
+            hIntentHolder?.hVideoList.isNullOrEmpty().not() -> hInitVideoAdapter(hIntentHolder?.hVideoList!!)
         }
     }
 

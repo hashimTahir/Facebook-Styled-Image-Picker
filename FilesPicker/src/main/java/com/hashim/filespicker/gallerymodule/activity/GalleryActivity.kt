@@ -16,7 +16,7 @@ import androidx.navigation.fragment.NavHostFragment
 import com.hashim.filespicker.R
 import com.hashim.filespicker.databinding.ActivityGalleryBinding
 import com.hashim.filespicker.gallerymodule.FileType
-import com.hashim.filespicker.gallerymodule.GalleryStateView.*
+import com.hashim.filespicker.gallerymodule.GalleryActivitySv.*
 import com.hashim.filespicker.gallerymodule.GalleryViewModel
 import com.hashim.filespicker.gallerymodule.GalleryVs.*
 import com.hashim.filespicker.gallerymodule.PermissionUtils
@@ -35,7 +35,7 @@ class GalleryActivity : AppCompatActivity(), View.OnClickListener {
         ActivityResultContracts.StartActivityForResult()
     ) {
         if (PermissionUtils.hHasReadPermissions(this)) {
-            hGalleryViewModel.hFetchFiles(intent.extras)
+            hGalleryViewModel.hOnActivityEvents(OnSetData(intent.extras))
         } else {
             Toast.makeText(
                 this,
@@ -56,7 +56,7 @@ class GalleryActivity : AppCompatActivity(), View.OnClickListener {
         ActivityResultContracts.RequestPermission()
     ) { hIsPermissionGranted ->
         if (hIsPermissionGranted) {
-            hGalleryViewModel.hFetchFiles(intent.extras)
+            hGalleryViewModel.hOnActivityEvents(OnSetData(intent.extras))
         } else {
             if (PermissionUtils.hRationaileCheck(this).not()) {
                 PermissionUtils.hShowSettingsDialog(this, hLaunchSettingsContract)
@@ -84,7 +84,7 @@ class GalleryActivity : AppCompatActivity(), View.OnClickListener {
 
         when {
             PermissionUtils.hHasReadPermissions(this) -> {
-                hGalleryViewModel.hFetchFiles(intent.extras)
+                hGalleryViewModel.hOnActivityEvents(OnSetData(intent.extras))
             }
             else -> {
                 hRequestPermissions.launch(
@@ -149,29 +149,23 @@ class GalleryActivity : AppCompatActivity(), View.OnClickListener {
         Intent(
             this,
             callingActivity?.className?.javaClass
-        ).also {
+        ).also { intent ->
             when {
-                hIntentHolder.hVideosList != null -> {
-                    it.putExtra(
-                        FileType.Videos.toString(),
-                        hIntentHolder
-                    )
-                }
-                hIntentHolder.hImageList != null -> {
-                    it.putExtra(
-                        FileType.Images.toString(),
-                        hIntentHolder
-                    )
-                }
-                hIntentHolder.hAudioList != null -> {
-                    it.putExtra(
-                        FileType.Audios.toString(),
-                        hIntentHolder
-                    )
-                }
+                hIntentHolder.hImageList.isNullOrEmpty().not() -> intent.putExtra(
+                    FileType.Images.toString(),
+                    hIntentHolder
+                )
+                hIntentHolder.hVideoList.isNullOrEmpty().not() -> intent.putExtra(
+                    FileType.Videos.toString(),
+                    hIntentHolder
+                )
+                hIntentHolder.hAudioList.isNullOrEmpty().not() -> intent.putExtra(
+                    FileType.Audios.toString(),
+                    hIntentHolder
+                )
             }
+            setResult(RESULT_OK, intent)
 
-            setResult(RESULT_OK, it)
             finish()
         }
     }

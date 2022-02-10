@@ -1,18 +1,23 @@
 package com.hashim.filespicker.gallerymodule
 
+import android.os.Bundle
 import com.hashim.filespicker.gallerymodule.data.Folder
 import com.hashim.filespicker.gallerymodule.data.PositionHolder
 
-sealed class GalleryStateView {
-    data class OnPictureTaken(val hIsSuccessFull: Boolean) : GalleryStateView()
+sealed class GalleryActivitySv {
+    data class OnPictureTaken(val hIsSuccessFull: Boolean) : GalleryActivitySv()
 
-    object OnReloadFiles : GalleryStateView()
+    object OnReloadFiles : GalleryActivitySv()
 
-    object OnCameraSelected : GalleryStateView()
+    object OnCameraSelected : GalleryActivitySv()
 
-    object OnMultiSelection : GalleryStateView()
+    object OnMultiSelection : GalleryActivitySv()
 
-    object OnNextClicked : GalleryStateView()
+    object OnNextClicked : GalleryActivitySv()
+
+    data class OnSetData(
+        val hBundle: Bundle? = null
+    ) : GalleryActivitySv()
 
 
 }
