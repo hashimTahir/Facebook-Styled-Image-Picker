@@ -163,7 +163,7 @@ class GalleryViewModel(
     private fun hCheckCameraResult(hIsSuccessFull: Boolean) {
         when {
             hIsSuccessFull -> {
-                hEmitOnSeletionDone()
+                hEmitOnSelectionDone()
             }
             else -> {
                 OnLoadingOrError(hMessage = "Error retrieving files from camera").hEmitValue()
@@ -219,11 +219,11 @@ class GalleryViewModel(
                 }
             }
         }
-        hEmitOnSeletionDone()
+        hEmitOnSelectionDone()
     }
 
 
-    private fun hEmitOnSeletionDone() {
+    private fun hEmitOnSelectionDone() {
         OnSelectionDone(
             hIntentHolder = hUsersSelectedFiles.hMapToOutput(hFileType)
         ).hEmitValue()
@@ -257,9 +257,9 @@ class GalleryViewModel(
             var hTrueList = hSelectedFolderMap[true]
             var hFalseList = hSelectedFolderMap[false]
 
-            val pair = hNullCheckList(hTrueList, hFalseList)
-            hTrueList = pair.first
-            hFalseList = pair.second
+            val hPair = hNullCheckList(hTrueList, hFalseList)
+            hTrueList = hPair.first
+            hFalseList = hPair.second
 
 
             if (hTrueList.contains(onAddMultipleFiles.hPostionHolder)) {
@@ -287,10 +287,8 @@ class GalleryViewModel(
                 hFolderId
             )
 
-
             if (hIsMultipleSelected) {
                 hEmitAdapterUpdate(hFolderId)
-
             }
 
         }

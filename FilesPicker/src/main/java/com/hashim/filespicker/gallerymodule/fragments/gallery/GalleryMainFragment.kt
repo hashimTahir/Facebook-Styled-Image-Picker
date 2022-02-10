@@ -1,9 +1,12 @@
 package com.hashim.filespicker.gallerymodule.fragments.gallery
 
+import android.media.AudioAttributes
+import android.media.MediaPlayer
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.net.toUri
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Lifecycle
@@ -13,15 +16,17 @@ import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.hashim.filespicker.databinding.FragmentGalleryMainBinding
 import com.hashim.filespicker.gallerymodule.FileType
-import com.hashim.filespicker.gallerymodule.GalleryMainStateView.OnAddFiles
+import com.hashim.filespicker.gallerymodule.GalleryMainStateView
 import com.hashim.filespicker.gallerymodule.GalleryViewModel
 import com.hashim.filespicker.gallerymodule.GalleryVs.*
+import com.hashim.filespicker.gallerymodule.data.PositionHolder
 import kotlinx.coroutines.flow.collectLatest
 
-class GalleryMainFragment : Fragment() {
+class GalleryMainFragment : Fragment(), FilesAdapter.FilesAdapterCallbacks {
     private var hFragmentGalleryMainBinding: FragmentGalleryMainBinding? = null
     private val hGalleryViewModel by activityViewModels<GalleryViewModel>()
     private var hFilesAdapter: FilesAdapter? = null
+    private var hMediaPlayer: MediaPlayer? = null
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -43,13 +48,8 @@ class GalleryMainFragment : Fragment() {
 
     private fun hInitRecyclerView() {
         if (hFilesAdapter == null) {
-            hFilesAdapter = FilesAdapter { hCheckedImage, position ->
-                hGalleryViewModel.hOnGalleryMainFragment(
-                    OnAddFiles(
-                        hPostionHolder = hCheckedImage,
-                        hPosition = position,
-                    )
-                )
+            hFilesAdapter = FilesAdapter().apply {
+                hSetFilesAdapterCallbacks(this@GalleryMainFragment)
             }
         }
 
@@ -61,6 +61,7 @@ class GalleryMainFragment : Fragment() {
         hFragmentGalleryMainBinding?.hMainRv?.apply {
             layoutManager = hLayoutManager
             adapter = hFilesAdapter
+            itemAnimator = null
         }
     }
 
@@ -99,6 +100,38 @@ class GalleryMainFragment : Fragment() {
     override fun onDestroyView() {
         super.onDestroyView()
         hFragmentGalleryMainBinding = null
+        hReleaseMediaPlayer()
+    }
+
+    override fun hOnUpdateCount(positionHolder: PositionHolder, position: Int) {
+        hGalleryViewModel.hOnGalleryMainFragment(
+            GalleryMainStateView.OnAddFiles(
+                hPostionHolder = positionHolder,
+                hPosition = position,
+            )
+        )
+    }
+
+    override fun hOnPlayAudio(hUri: String) {
+        hReleaseMediaPlayer()
+        hMediaPlayer = MediaPlayer().apply {
+            setAudioAttributes(
+                AudioAttributes.Builder()
+                    .setContentType(AudioAttributes.CONTENT_TYPE_MUSIC)
+                    .setUsage(AudioAttributes.USAGE_MEDIA)
+                    .build()
+            )
+            setDataSource(requireActivity().applicationContext, hUri.toUri())
+            prepare()
+            start()
+        }
+    }
+
+    private fun hReleaseMediaPlayer() {
+        if (hMediaPlayer != null) {
+            hMediaPlayer?.release()
+            hMediaPlayer = null
+        }
     }
 
 }

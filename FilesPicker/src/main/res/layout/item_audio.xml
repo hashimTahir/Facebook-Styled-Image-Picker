@@ -17,13 +17,31 @@
         android:layout_height="wrap_content"
         android:padding="5dp">
 
-        <ImageView
+
+        <TextView
+            android:id="@+id/hNumberCb"
+            android:layout_width="@dimen/_20dp"
+            android:layout_height="@dimen/_20dp"
+            android:layout_marginTop="@dimen/_8dp"
+            android:layout_marginEnd="@dimen/_8dp"
+            android:background="@drawable/rounded_textview"
+            android:gravity="center"
+            android:textColor="@color/white"
+            android:backgroundTint="@color/light_gray"
+            android:textSize="@dimen/_10sp"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <com.google.android.material.imageview.ShapeableImageView
             android:id="@+id/hAudioThumbIv"
             android:layout_width="@dimen/_40dp"
             android:layout_height="@dimen/_40dp"
             android:layout_marginStart="@dimen/_15dp"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintStart_toEndOf="@id/hNumberCb"
+            app:shapeAppearanceOverlay="@style/h10PercentCornerSize"
             app:layout_constraintTop_toTopOf="parent" />
 
         <TextView

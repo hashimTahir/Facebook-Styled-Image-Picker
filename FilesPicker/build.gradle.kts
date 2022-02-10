@@ -4,7 +4,6 @@ plugins {
     id("maven-publish")
     id("kotlin-kapt")
     id("kotlin-parcelize")
-
     `maven-publish`
 }
 
@@ -72,13 +71,13 @@ afterEvaluate {
                 from(components["debug"])
                 artifactId = "FilesPicker"
                 groupId = "com.github.hashimTahir"
-                version = "1.3"
+                version = "1.4"
             }
             create<MavenPublication>("release") {
                 from(components["release"])
                 artifactId = "FilesPicker"
                 groupId = "com.github.hashimTahir"
-                version = "1.3"
+                version = "1.4"
             }
         }
     }

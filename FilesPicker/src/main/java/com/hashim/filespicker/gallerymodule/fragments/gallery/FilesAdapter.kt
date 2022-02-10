@@ -20,16 +20,12 @@ import com.hashim.filespicker.gallerymodule.data.PositionHolder
 const val H_AUDIO_VH = 0
 const val H_OTHER_VH = 1
 
-class FilesAdapter(
-    private val hFilesAdapterCallback: (
-        hPositionHolder: PositionHolder?,
-        hPosition: Int,
-    ) -> Unit
-) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+class FilesAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
 
     private var hFilesList = listOf<CheckedFile>()
     private var hPositionMap = mutableListOf<PositionHolder>()
+    private var hFilesAdapterCallbacks: FilesAdapterCallbacks? = null
 
 
     override fun onCreateViewHolder(
@@ -77,38 +73,7 @@ class FilesAdapter(
                         .centerCrop()
                         .into(hAudioThumbIv)
 
-
-//                    when (hCheckFile.hIsCheck) {
-//                        true -> hNumberCb.visibility = View.VISIBLE
-//                        else -> hNumberCb.visibility = View.GONE
-//                    }
-
-//                    hUpdateCount(hNumberCb, position)
-
-//                    root.setOnClickListener {
-//                        hFilesAdapterCallback(
-//                            PositionHolder(
-//                                hText = hNumberCb.text.toString(),
-//                                hPosition = position,
-//                                hTextInt = if (hNumberCb.text.toString().isNotEmpty()) {
-//                                    hNumberCb.text.toString().toInt()
-//                                } else {
-//                                    0
-//                                }
-//                            ),
-//                            position,
-//                        )
-//                    }
-                }
-
-            }
-            is FileVh -> {
-
-                viewHodler.hItemImageBinding.apply {
-                    Glide.with(hMainIv.context)
-                        .load(hCheckFile.hItem?.hUri)
-                        .centerCrop()
-                        .into(hMainIv)
+                    hAudioNameTv.text = hAudioItem.hTitle
 
 
                     when (hCheckFile.hIsCheck) {
@@ -118,8 +83,43 @@ class FilesAdapter(
 
                     hUpdateCount(hNumberCb, position)
 
+                    hPlayIv.setOnClickListener {
+                        hAudioItem.hUri?.let { uri ->
+                            hFilesAdapterCallbacks?.hOnPlayAudio(uri)
+                        }
+                    }
                     root.setOnClickListener {
-                        hFilesAdapterCallback(
+                        hFilesAdapterCallbacks?.hOnUpdateCount(
+                            PositionHolder(
+                                hText = hNumberCb.text.toString(),
+                                hPosition = position,
+                                hTextInt = if (hNumberCb.text.toString().isNotEmpty()) {
+                                    hNumberCb.text.toString().toInt()
+                                } else {
+                                    0
+                                }
+                            ),
+                            position,
+                        )
+                    }
+                }
+            }
+            is FileVh -> {
+                viewHodler.hItemImageBinding.apply {
+                    Glide.with(hMainIv.context)
+                        .load(hCheckFile.hItem?.hUri)
+                        .centerCrop()
+                        .into(hMainIv)
+
+                    when (hCheckFile.hIsCheck) {
+                        true -> hNumberCb.visibility = View.VISIBLE
+                        else -> hNumberCb.visibility = View.GONE
+                    }
+
+                    hUpdateCount(hNumberCb, position)
+
+                    root.setOnClickListener {
+                        hFilesAdapterCallbacks?.hOnUpdateCount(
                             PositionHolder(
                                 hText = hNumberCb.text.toString(),
                                 hPosition = position,
@@ -144,42 +144,48 @@ class FilesAdapter(
         position: Int
     ) {
         if (hPositionMap.isNotEmpty()) {
-
             hPositionMap.find {
                 it.hPosition == position
-            }?.apply {
-                if (hText.isNotEmpty()) {
-                    hNumberCb.apply {
-                        text = hText
-                        setTextColor(
-                            ContextCompat.getColor(
-                                hNumberCb.context,
-                                R.color.white
+            }.apply {
+                if (this != null) {
+                    if (hText.isNotEmpty()) {
+                        hNumberCb.apply {
+                            text = hText
+                            setTextColor(
+                                ContextCompat.getColor(
+                                    hNumberCb.context,
+                                    R.color.white
+                                )
                             )
-                        )
-                        background = ContextCompat.getDrawable(
-                            hNumberCb.context,
-                            R.drawable.circle_colored
-                        )
+                            background = ContextCompat.getDrawable(
+                                hNumberCb.context,
+                                R.drawable.circle_colored
+                            )
+                        }
+                    } else {
+                        hNumberCb.apply {
+                            text = hText
+                            background = ContextCompat.getDrawable(
+                                hNumberCb.context,
+                                R.drawable.rounded_corners
+                            )
+                        }
                     }
                 } else {
-                    hNumberCb.apply {
-                        text = hText
-                        background = ContextCompat.getDrawable(
-                            hNumberCb.context,
-                            R.drawable.rounded_corners
-                        )
-                    }
+                    hResetTextToDefault(hNumberCb)
                 }
-
             }
         } else {
-            hNumberCb.text = ""
-            hNumberCb.background = ContextCompat.getDrawable(
-                hNumberCb.context,
-                R.drawable.circle_transparent
-            )
+            hResetTextToDefault(hNumberCb)
         }
+    }
+
+    private fun hResetTextToDefault(hNumberCb: TextView) {
+        hNumberCb.text = ""
+        hNumberCb.background = ContextCompat.getDrawable(
+            hNumberCb.context,
+            R.drawable.circle_transparent
+        )
     }
 
     override fun getItemCount(): Int {
@@ -209,7 +215,19 @@ class FilesAdapter(
             notifyDataSetChanged()
         }
 
+    }
 
+    fun hSetFilesAdapterCallbacks(filesAdapterCallbacks: FilesAdapterCallbacks) {
+        hFilesAdapterCallbacks = filesAdapterCallbacks
+    }
+
+    interface FilesAdapterCallbacks {
+        fun hOnUpdateCount(
+            positionHolder: PositionHolder,
+            position: Int
+        )
+
+        fun hOnPlayAudio(hUri: String)
     }
 
 }
